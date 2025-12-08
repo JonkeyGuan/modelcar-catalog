@@ -33,7 +33,7 @@ You can optionally update those filters for what the model you are attempting to
 ## Build Example
 
 ```
-FROM quay.io/redhat-ai-services/huggingface-downloader:latest as base
+FROM quay.io/modelcar/huggingface-downloader:latest as base
 
 # Set the HF_TOKEN with --build-arg HF_TOKEN="hf_..." at build time
 ARG HF_TOKEN
