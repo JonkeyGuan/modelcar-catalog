@@ -1,16 +1,27 @@
-FROM registry.access.redhat.com/ubi9/ubi-minimal:9.6 as base
+FROM registry.access.redhat.com/ubi9/ubi-minimal:9.6
 
-# Set the HF_TOKEN with --build-arg HF_TOKEN="hf_..." at build time
 ARG HF_TOKEN
 ENV MODEL_REPO=""
+ENV TARGET_DIR="/models"
+ARG ARIA2_VER="1.36.0_2021.08.22"
+
+USER root
+
+RUN microdnf -y install git git-lfs python3-pip tar ca-certificates && \
+    update-ca-trust && \
+    ln -sf /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem /etc/ssl/certs/ca-certificates.crt && \
+    microdnf clean all
 
 COPY requirements.txt .
+RUN pip3 install --no-cache-dir -r requirements.txt
 
-# Install necessary Python dependencies
-RUN microdnf -y install git git-lfs python3-pip && \
-    microdnf clean all && \
-    pip3 install -r requirements.txt
+RUN /usr/bin/curl -fLsS -O https://github.com/P3TERX/Aria2-Pro-Core/releases/download/${ARIA2_VER}/aria2-1.36.0-static-linux-arm64.tar.gz && \
+    tar zxvf aria2-1.36.0-static-linux-arm64.tar.gz && \
+    mv aria2c /usr/local/bin/aria2c && chmod +x /usr/local/bin/aria2c && \
+    rm -f aria2-1.36.0-static-linux-arm64.tar.gz
 
 COPY download_model.py .
 
-CMD /usr/bin/python3 download_model.py --model-repo ${MODEL_REPO}
+CMD ["/usr/bin/python3", "download_model.py", "--model-repo", "${MODEL_REPO}"]
+
+USER 1001
