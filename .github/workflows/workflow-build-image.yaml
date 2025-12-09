@@ -13,7 +13,7 @@ on:
       context:
         required: false
         type: string
-        default: .
+        default: builder-images/huggingface-downloader
       containerfile:
         required: false
         type: string
