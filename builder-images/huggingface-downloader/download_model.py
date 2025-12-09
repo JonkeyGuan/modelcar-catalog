@@ -1,8 +1,10 @@
 import argparse
-import os
 import fnmatch
+import os
 import subprocess
-from huggingface_hub import list_repo_files, hf_hub_url, snapshot_download
+
+from huggingface_hub import hf_hub_url, list_repo_files, snapshot_download
+
 
 def expand_env_var(value: str) -> str:
     """Expand ${VAR} in the value using os.environ"""
@@ -10,58 +12,54 @@ def expand_env_var(value: str) -> str:
         return value
     return os.path.expandvars(value)
 
+
 def aria2_download(url: str, output_path: str) -> None:
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     cmd = [
         "aria2c",
-        "-x", "16",
-        "-s", "16",
-        "-j", "16",
-        "-k", "1M",
+        "-x",
+        "16",
+        "-s",
+        "16",
+        "-j",
+        "16",
+        "-k",
+        "1M",
         "-c",
-        "-d", os.path.dirname(output_path),
-        "-o", os.path.basename(output_path),
+        "-d",
+        os.path.dirname(output_path),
+        "-o",
+        os.path.basename(output_path),
         url,
     ]
     print(f"[aria2] Downloading: {url}")
-    subprocess.run(cmd, check=True) # noqa: S603
+    subprocess.run(cmd, check=True)  # noqa: S603
+
 
 def main() -> None:
     parser = argparse.ArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
+    parser.add_argument("-m", "--model-repo", type=str, help="HuggingFace model repo")
     parser.add_argument(
-        "-m", 
-        "--model-repo", 
-        type=str, 
-        help="HuggingFace model repo"
+        "-t", "--target-dir", type=str, default="./models", help="Target directory"
     )
     parser.add_argument(
-        "-t", 
-        "--target-dir", 
-        type=str, 
-        default="./models", 
-        help="Target directory"
-    )
-    parser.add_argument(
-        "-a", 
-        "--allow-patterns", 
-        nargs="+", 
-        help="Allowed patterns to download"
+        "-a", "--allow-patterns", nargs="+", help="Allowed patterns to download"
     )
     group = parser.add_mutually_exclusive_group()
     group.add_argument(
-        "--use-aria2", 
-        dest="use_aria2", 
-        action="store_true", 
-        help="Use aria2 to download files"
+        "--use-aria2",
+        dest="use_aria2",
+        action="store_true",
+        help="Use aria2 to download files",
     )
     group.add_argument(
-        "--no-aria2", 
-        dest="use_aria2", 
-        action="store_false", 
-        help="Do not use aria2, use snapshot_download instead"
-        )
+        "--no-aria2",
+        dest="use_aria2",
+        action="store_false",
+        help="Do not use aria2, use snapshot_download instead",
+    )
     parser.set_defaults(use_aria2=True)
     args = parser.parse_args()
 
@@ -76,8 +74,9 @@ def main() -> None:
     if args.allow_patterns:
         allow_patterns = args.allow_patterns
     elif allow_patterns_env:
-        allow_patterns = [p.strip() for p in allow_patterns_env.replace(",", " ")
-                          .split()]
+        allow_patterns = [
+            p.strip() for p in allow_patterns_env.replace(",", " ").split()
+        ]
     else:
         allow_patterns = default_allow_patterns
 
@@ -90,9 +89,7 @@ def main() -> None:
 
     all_files = list_repo_files(model_repo)
     matched = [
-        f
-        for f in all_files
-        if any(fnmatch.fnmatch(f, p) for p in allow_patterns)
+        f for f in all_files if any(fnmatch.fnmatch(f, p) for p in allow_patterns)
     ]
 
     if not matched:
@@ -112,10 +109,11 @@ def main() -> None:
             snapshot_download(
                 repo_id=model_repo,
                 local_dir=os.path.dirname(out_path),
-                allow_patterns=[os.path.basename(out_path)]
+                allow_patterns=[os.path.basename(out_path)],
             )
 
     print("\nAll files downloaded successfully!")
+
 
 if __name__ == "__main__":
     main()
