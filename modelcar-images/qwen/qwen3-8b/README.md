@@ -21,7 +21,7 @@ podman run --rm --platform linux/arm64 \
 ### Building the ModelCar Image
 
 ```
-podman build modelcar-images/qwen/qwen3-8b \
+podman build -f modelcar-images/qwen/qwen3-8b/Containerfile modelcar-images/qwen/qwen3-8b \
     -t quay.io/modelcar/modelcar-catalog:qwen3-8b  \
     --platform linux/arm64
 ```
