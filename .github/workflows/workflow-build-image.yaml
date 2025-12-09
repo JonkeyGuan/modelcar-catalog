@@ -44,7 +44,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        arch: [amd64, arm64]
+        arch: [arm64]
     outputs:
       target_tag: ${{ steps.version.outputs.date_tag }}
     steps:
