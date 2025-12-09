@@ -24,10 +24,12 @@ def aria2_download(url: str, output_path: str) -> None:
         url,
     ]
     print(f"[aria2] Downloading: {url}")
-    subprocess.run(cmd, check=True)
+    subprocess.run(cmd, check=True) # noqa: S603
 
-def main():
-    parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+def main() -> None:
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter
+    )
     parser.add_argument(
         "-m", 
         "--model-repo", 
