@@ -29,7 +29,7 @@ on:
 jobs:
   build-image:
     name: Build Image
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-22.04-arm
     strategy:
       matrix:
         arch: [arm64]
@@ -48,10 +48,6 @@ jobs:
           containerfiles: ${{ inputs.context }}/${{ inputs.containerfile }}
           build-args: HF_TOKEN=${{ secrets.hf-token }}
           platform: linux/${{ matrix.arch }}
-
-      - name: Podman Login Debug
-        run: |
-          podman login quay.io -u ${{ secrets.registry-username }} -p ${{ secrets.registry-password }}
 
       - name: Push-Image
         id: push-to-registry
