@@ -18,17 +18,6 @@ on:
         required: false
         type: string
         default: ./Containerfile
-      tag-base:
-        required: false
-        type: string
-      tag-suffix:
-        required: false
-        type: string
-        default: ""
-      push-latest:
-        required: false
-        type: boolean
-        default: true
     secrets:
       registry-username:
         required: true
@@ -44,54 +33,17 @@ jobs:
     strategy:
       matrix:
         arch: [arm64]
-    outputs:
-      target_tag: ${{ steps.version.outputs.date_tag }}
     steps:
 
       - name: Checkout Repository
         id: checkout
         uses: actions/checkout@v4
 
-      # - name: downgrade docker
-      #   run: |
-      #     apt-cache madison docker.io
-      #     sudo apt-get remove containerd.io
-      #     sudo apt-get install docker.io=24.0.7-0ubuntu2~22.04.1
-
-      - name: Create tags
-        id: version
-        run: |
-          PYPROJECT_FILE="${{ inputs.context }}/pyproject.toml"
-          if [ -f ${PYPROJECT_FILE} ]; then
-            VERSION=$(awk -F' = ' '/^version/ {gsub(/"/, "", $2); print $2}' ${PYPROJECT_FILE} | tr -d '"')
-            echo "version=$VERSION" | tee -a $GITHUB_OUTPUT
-          fi
-
-          MAIN_TAG=${{ inputs.tag-base }}${VERSION}${{ inputs.tag-suffix }}
-          echo "main_tag=$MAIN_TAG" | tee -a $GITHUB_OUTPUT
-
-          DATE=$(date -u +'%Y%m%dt%H%Mz')
-          echo "date=${DATE}" | tee -a $GITHUB_OUTPUT
-
-          DATE_TAG=${MAIN_TAG}-${DATE}
-          echo "date_tag=${DATE_TAG}" | tee -a $GITHUB_OUTPUT
-
-          TAGS="${MAIN_TAG} ${DATE_TAG}"
-
-          if ${{ inputs.push-latest }}; then
-            LATEST_TAG="latest${{ inputs.tag-suffix }}"
-            echo "latest_tag=${LATEST_TAG}" | tee -a $GITHUB_OUTPUT
-            TAGS="${TAGS} ${LATEST_TAG}"
-          fi
-
-          echo "tags=${TAGS}" | tee -a $GITHUB_OUTPUT
-
       - name: Setup and Build
         id: build_image
         uses: redhat-actions/buildah-build@v2
         with:
           image: ${{ inputs.image-name }}
-          tags: ${{ steps.version.outputs.tags }}
           context: ${{ inputs.context }}
           containerfiles: ${{ inputs.context }}/${{ inputs.containerfile }}
           build-args: HF_TOKEN=${{ secrets.hf-token }}
@@ -102,7 +54,6 @@ jobs:
         uses: redhat-actions/push-to-registry@v2
         with:
           image: ${{ inputs.registry }}/${{ inputs.image-name }}
-          tags: ${{ steps.build_image.outputs.tags }}
           registry: ${{ inputs.registry }}
           username: ${{ secrets.registry-username }}
           password: ${{ secrets.registry-password }}
