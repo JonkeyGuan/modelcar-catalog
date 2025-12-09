@@ -55,5 +55,5 @@ jobs:
         with:
           image: ${{ inputs.image-name }}
           registry: ${{ inputs.registry }}
-          username: ${{ secrets.registry-username }}
-          password: ${{ secrets.registry-password }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
