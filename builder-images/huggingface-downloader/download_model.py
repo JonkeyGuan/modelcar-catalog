@@ -10,7 +10,7 @@ def expand_env_var(value: str) -> str:
         return value
     return os.path.expandvars(value)
 
-def aria2_download(url: str, output_path: str):
+def aria2_download(url: str, output_path: str) -> None:
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     cmd = [
         "aria2c",
@@ -28,12 +28,38 @@ def aria2_download(url: str, output_path: str):
 
 def main():
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument("-m", "--model-repo", type=str, help="HuggingFace model repo")
-    parser.add_argument("-t", "--target-dir", type=str, default="./models", help="Target directory")
-    parser.add_argument("-a", "--allow-patterns", nargs="+", help="Allowed patterns to download")
+    parser.add_argument(
+        "-m", 
+        "--model-repo", 
+        type=str, 
+        help="HuggingFace model repo"
+    )
+    parser.add_argument(
+        "-t", 
+        "--target-dir", 
+        type=str, 
+        default="./models", 
+        help="Target directory"
+    )
+    parser.add_argument(
+        "-a", 
+        "--allow-patterns", 
+        nargs="+", 
+        help="Allowed patterns to download"
+    )
     group = parser.add_mutually_exclusive_group()
-    group.add_argument("--use-aria2", dest="use_aria2", action="store_true", help="Use aria2 to download files")
-    group.add_argument("--no-aria2", dest="use_aria2", action="store_false", help="Do not use aria2, use snapshot_download instead")
+    group.add_argument(
+        "--use-aria2", 
+        dest="use_aria2", 
+        action="store_true", 
+        help="Use aria2 to download files"
+    )
+    group.add_argument(
+        "--no-aria2", 
+        dest="use_aria2", 
+        action="store_false", 
+        help="Do not use aria2, use snapshot_download instead"
+        )
     parser.set_defaults(use_aria2=True)
     args = parser.parse_args()
 
@@ -48,7 +74,8 @@ def main():
     if args.allow_patterns:
         allow_patterns = args.allow_patterns
     elif allow_patterns_env:
-        allow_patterns = [p.strip() for p in allow_patterns_env.replace(",", " ").split()]
+        allow_patterns = [p.strip() for p in allow_patterns_env.replace(",", " ")
+                          .split()]
     else:
         allow_patterns = default_allow_patterns
 
