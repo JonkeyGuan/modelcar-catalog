@@ -1,6 +1,6 @@
 name: build-image
 on:
-  workflow_call:
+  workflow_dispatch:
     inputs:
       registry:
         required: true
