@@ -1,5 +1,5 @@
 # Default registry and image prefix
-REGISTRY = quay.io/redhat-ai-services
+REGISTRY = quay.io/modelcar
 IMAGE_PREFIX = modelcar-catalog
 MODELCAR_IMAGES = ./modelcar-images
 
