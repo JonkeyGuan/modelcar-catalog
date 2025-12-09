@@ -42,6 +42,9 @@ jobs:
   build-image:
     name: Build Image
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        arch: [amd64, arm64]
     outputs:
       target_tag: ${{ steps.version.outputs.date_tag }}
     steps:
@@ -93,6 +96,7 @@ jobs:
           context: ${{ inputs.context }}
           containerfiles: ${{ inputs.context }}/${{ inputs.containerfile }}
           build-args: HF_TOKEN=${{ secrets.hf-token }}
+          platform: linux/${{ matrix.arch }}
 
       - name: Push-Image
         id: push-to-registry

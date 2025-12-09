@@ -89,7 +89,11 @@ def main() -> None:
     os.makedirs(target_dir, exist_ok=True)
 
     all_files = list_repo_files(model_repo)
-    matched = [f for f in all_files if any(fnmatch.fnmatch(f, p) for p in allow_patterns)]
+    matched = [
+        f
+        for f in all_files
+        if any(fnmatch.fnmatch(f, p) for p in allow_patterns)
+    ]
 
     if not matched:
         print("No files matched patterns!")
