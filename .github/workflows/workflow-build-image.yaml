@@ -53,7 +53,7 @@ jobs:
         id: push-to-registry
         uses: redhat-actions/push-to-registry@v2
         with:
-          image: ${{ inputs.registry }}/${{ inputs.image-name }}
+          image: ${{ inputs.image-name }}
           registry: ${{ inputs.registry }}
           username: ${{ secrets.registry-username }}
           password: ${{ secrets.registry-password }}
