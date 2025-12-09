@@ -34,9 +34,6 @@ on:
         required: true
       hf-token:
         required: false
-    outputs:
-      target_tag:
-        value: ${{ jobs.build-image.outputs.target_tag }}
 
 jobs:
   build-image:
