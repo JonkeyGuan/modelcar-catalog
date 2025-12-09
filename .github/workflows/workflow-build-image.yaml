@@ -5,9 +5,11 @@ on:
       registry:
         required: true
         type: string
+        default: quay.io/modelcar
       image-name:
         required: true
         type: string
+        default: huggingface-downloader
       context:
         required: false
         type: string
@@ -26,7 +28,7 @@ on:
       push-latest:
         required: false
         type: boolean
-        default: false
+        default: true
     secrets:
       registry-username:
         required: true
